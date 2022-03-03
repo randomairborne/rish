@@ -17,5 +17,15 @@ pub fn echo(args: Vec<&str>) {
 }
 
 pub fn help() {
-    println!("There will be help here someday")
+    println!(
+        r#"valkyrie_pilot's `{}-{}`
+Usage:  rish [-h]
+Builtins:
+cd- Change working directory
+help- show this message
+exit- quit to control process
+"#,
+        env!("CARGO_CRATE_NAME"),
+        env!("CARGO_PKG_VERSION")
+    )
 }

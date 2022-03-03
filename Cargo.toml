@@ -1,9 +1,10 @@
 [package]
-name = "shell"
-version = "0.1.0"
+name = "rish"
+version = "0.0.1"
 edition = "2021"
+authors = ["valkyrie_pilot <valk@vky.one>"]
+license = "Apache-2.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-text_io = "0.1"
+rustyline = "9.1.0"
