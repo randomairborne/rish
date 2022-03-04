@@ -1,10 +1,10 @@
 #![feature(string_remove_matches)]
 use rustyline::error::ReadlineError;
-use std::io::Write;
 mod cmd;
 mod completion;
 mod cwd;
 mod internals;
+mod truncate_history;
 
 fn rish_mainloop() {
     let file_completer = completion::MyHelper {
@@ -20,15 +20,20 @@ fn rish_mainloop() {
         .build();
     let mut rl = rustyline::Editor::with_config(config);
     rl.set_helper(Some(file_completer));
-    if rl.load_history(".rish.history").is_err() {}
+    if rl.load_history("./.rish.history").is_err() {}
     loop {
-        let readline = rl.readline(format!("rish {} > ", cwd::get()).as_str());
-        std::io::stdout().flush().expect("Failed to flush stdout");
+        let prompt = format!("rish {} > ", cwd::get());
+        rl.helper_mut()
+            .expect("Failed to get readline helper")
+            .colored_prompt = format!("\x1b[1;32m{}\x1b[0m", prompt);
+        let readline = rl.readline(&prompt);
         match readline {
             Ok(line) => {
                 let mut args_with_cmd: Vec<&str> = line.split_whitespace().collect();
                 let cmd = args_with_cmd.remove(0);
                 let args = args_with_cmd;
+                rl.add_history_entry(line.as_str());
+
                 match cmd {
                     "exit" => break,
                     "cd" => internals::cd(args),
@@ -36,28 +41,25 @@ fn rish_mainloop() {
                     "help" => internals::help(),
                     _ => cmd::run(cmd, args),
                 }
-            rl.add_history_entry(line.as_str());
             }
             Err(ReadlineError::Interrupted) => {
-                println!("CTRL-C");
+                eprintln!("CTRL-C");
                 break;
             }
             Err(ReadlineError::Eof) => {
-                println!("CTRL-D");
+                eprintln!("CTRL-D");
                 break;
             }
-            /*Err(ReadlineError::) => {
-                println!("CTRL-D");
-                break;
-            }*/
             Err(err) => {
-                println!("Error: {:?}", err);
-                break;
+                eprintln!("Error: {:?}", err);
             }
         }
     }
-    rl.append_history(".rish.history")
-        .expect("Failed to save history!");
+    match rl.append_history(".rish.history") {
+        Ok(_) => {}
+        Err(e) => eprintln!("Error saving to history file: {}", e),
+    }
+    truncate_history::truncate_history();
 }
 
 fn main() {
