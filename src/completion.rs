@@ -3,7 +3,7 @@ use std::borrow::Cow::{self, Borrowed, Owned};
 use rustyline::completion::{Completer, FilenameCompleter, Pair};
 use rustyline::error::ReadlineError;
 use rustyline::highlight::{Highlighter, MatchingBracketHighlighter};
-use rustyline::hint::{Hinter, HistoryHinter};
+use rustyline::hint::Hinter;
 use rustyline::validate::{self, MatchingBracketValidator, Validator};
 use rustyline::Context;
 use rustyline_derive::Helper;
@@ -13,7 +13,7 @@ pub struct MyHelper {
     pub completer: FilenameCompleter,
     pub highlighter: MatchingBracketHighlighter,
     pub validator: MatchingBracketValidator,
-    pub hinter: HistoryHinter,
+    pub hinter: (),
     pub colored_prompt: String,
 }
 

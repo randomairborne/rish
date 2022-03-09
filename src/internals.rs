@@ -19,13 +19,57 @@ pub fn echo(args: Vec<&str>) {
 pub fn help() {
     println!(
         r#"valkyrie_pilot's `{}-{}`
-Usage:  rish [-h]
+Usage:  {} [-h]
 Builtins:
 cd- Change working directory
+set- Set environment variable
+del- Delete environment variable 
 help- show this message
 exit- quit to control process
 "#,
         env!("CARGO_CRATE_NAME"),
-        env!("CARGO_PKG_VERSION")
+        env!("CARGO_PKG_VERSION"),
+        env!("CARGO_CRATE_NAME"),
     )
+}
+
+pub fn var(args: Vec<&str>) {
+    let key: String = match args.get(0) {
+        Some(key) => key.to_string(),
+        None => {
+            eprintln!("Missing environment variable name");
+            return;
+        }
+    };
+    let value: String = match args.get(1) {
+        Some(value) => value.to_string(),
+        None => {
+            eprintln!("Missing environment variable value");
+            return;
+        }
+    };
+    if key.contains("=") || key.contains("\0") || key == String::from("") {
+        eprintln!("Environment variable name contains =, null, or is empty");
+        return;
+    }
+    if value.contains("\0") {
+        eprintln!("Environment variable name contains =, null, or is empty");
+        return;
+    }
+    std::env::set_var(key, value);
+}
+
+pub fn vardel(args: Vec<&str>) {
+    let key: String = match args.get(0) {
+        Some(key) => key.to_string(),
+        None => {
+            eprintln!("Missing environment variable name");
+            return;
+        }
+    };
+    if key.contains("=") || key.contains("\0") || key == String::from("") {
+        eprintln!("Environment variable name contains =, null, or is empty");
+        return;
+    }
+    std::env::remove_var(key);
 }

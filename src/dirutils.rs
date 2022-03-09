@@ -1,9 +1,10 @@
-fn gethome() -> String {
+pub fn gethome() -> String {
     match std::env::var("HOME") {
         Ok(home) => home.to_string(),
         Err(_) => "/".to_string(),
     }
 }
+
 pub fn get() -> String {
     let current_directory_pathbuf = match std::env::current_dir() {
         Ok(path) => path,

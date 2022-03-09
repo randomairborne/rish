@@ -21,7 +21,7 @@ fn lines_from_file(filename: impl AsRef<std::path::Path>) -> Vec<String> {
 pub fn truncate_history() {
     let mut lines = lines_from_file("./.rish.history");
     if lines.len() > 10000 {
-        lines.drain(0..(lines.len() - 10000));
+        lines.drain(1..(lines.len() - 10000));
     }
     fs::write("./.rish.history", lines.join("\n")).expect("Failed to write truncated history")
 }
